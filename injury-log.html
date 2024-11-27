@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Injury Log Book</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      color: #444;
+    }
+    form {
+      max-width: 600px;
+      margin: 0 auto 20px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .log-list {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .log-item {
+      background: #fff;
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .log-item h3 {
+      margin: 0 0 5px;
+      color: #444;
+    }
+    .log-item p {
+      margin: 5px 0;
+      color: #666;
+    }
+    .delete-btn {
+      display: block;
+      margin-top: 10px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Injury Log Book</h1>
+  <form id="injuryForm">
+    <label for="childName">Child's Name:</label>
+    <input type="text" id="childName" placeholder="Enter child's name" required>
+
+    <label for="date">Date of Injury:</label>
+    <input type="date" id="date" required>
+
+    <label for="description">Description of Injury:</label>
+    <textarea id="description" rows="4" placeholder="Describe the injury" required></textarea>
+
+    <button type="submit">Add Injury</button>
+  </form>
+
+  <div id="logList" class="log-list"></div>
+
+  <script>
+    const form = document.getElementById('injuryForm');
+    const logList = document.getElementById('logList');
+
+    // Load logs from localStorage
+    function loadLogs() {
+      const logs = JSON.parse(localStorage.getItem('injuryLogs')) || [];
+      logList.innerHTML = '';
+      logs.forEach((log, index) => {
+        const logItem = document.createElement('div');
+        logItem.className = 'log-item';
+        logItem.innerHTML = `
+          <h3>${log.childName}</h3>
+          <p><strong>Date:</strong> ${log.date}</p>
+          <p>${log.description}</p>
+          <button class="delete-btn" onclick="deleteLog(${index})">Delete</button>
+        `;
+        logList.appendChild(logItem);
+      });
+    }
+
+    // Save logs to localStorage
+    function saveLogs(logs) {
+      localStorage.setItem('injuryLogs', JSON.stringify(logs));
+    }
+
+    // Add new log
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const childName = document.getElementById('childName').value;
+      const date = document.getElementById('date').value;
+      const description = document.getElementById('description').value;
+
+      const logs = JSON.parse(localStorage.getItem('injuryLogs')) || [];
+      logs.push({ childName, date, description });
+      saveLogs(logs);
+      loadLogs();
+      form.reset();
+    });
+
+    // Delete a log
+    function deleteLog(index) {
+      const logs = JSON.parse(localStorage.getItem('injuryLogs')) || [];
+      logs.splice(index, 1);
+      saveLogs(logs);
+      loadLogs();
+    }
+
+    // Initial load
+    loadLogs();
+  </script>
+</body>
+</html>
